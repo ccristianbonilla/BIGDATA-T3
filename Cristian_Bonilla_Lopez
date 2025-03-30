@@ -1,0 +1,64 @@
+#************************************************************
+#Dataset = Cáncer infantil
+#Fuente WEB: https://www.datos.gov.co/resource/dj7a-2nxi.csv
+# Estudiante: CRISTIAN EDUARDO BONILLA LOPEZ
+#************************************************************
+
+#Importamos librerias necesarias
+from pyspark.sql import SparkSession, functions as F
+
+# Inicializa la sesión de Spark
+spark = SparkSession.builder.appName('bigdatatarea3.py').getOrCreate()
+
+# Define la ruta del archivo .csv en HDFS
+file_path = 'hdfs://localhost:9000/Tarea3/dj7a-2nxi.csv'
+# Lee el archivo .csv
+df = spark.read.format('csv').option('header','true').option('inferSchema', 'true').load(file_path)
+
+
+#imprimimos el esquema
+df.printSchema()
+
+# Muestra las primeras filas del DataFrame
+df.show()
+
+# Estadisticas básicas
+df.summary().show()
+
+from pyspark.sql.functions import col
+
+
+#********************************************
+# **********Operaciones de Limpieza**********
+#********************************************
+# liminar filas con valores nulos
+df = df.dropna()
+
+
+#**************************************************
+# **********Operaciones de transformación**********
+#**************************************************
+# Agrupaciones y cálculos
+from pyspark.sql.functions import avg
+df.groupBy("nombre_nacionalidad").agg(avg("edad")).show()
+
+
+#**********************************
+# **********Consultas SQL**********
+#**********************************
+# Mostrar las 5 primeras filas del DataFrame
+df.show(5)
+
+# Consulta para mostrar solo los niños con nacionalidad VENEZUELA
+from pyspark.sql.functions import col
+df.filter((col("nombre_nacionalidad") == "VENEZUELA") & (col("edad") < 18)).show()
+
+# Consulta para mostrar solo los niños de estrato 1
+from pyspark.sql.functions import col
+df.filter((col("estrato") == 1) & (col("edad") < 18)).show()
+
+# Consulta para mostrar solo los niños de sexo masculino
+df.filter(col("sexo") == "MASCULINO").show()
+
+# Consulta para mostrar solo los niños con tip_ss subsidiado
+df.filter(col("tip_ss") == "SUBSIDIADO").show()
