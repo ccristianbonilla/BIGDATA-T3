@@ -8,7 +8,7 @@
 from pyspark.sql import SparkSession, functions as F
 
 # Inicializa la sesión de Spark
-spark = SparkSession.builder.appName('bigdatatarea3.py').getOrCreate()
+spark = SparkSession.builder.appName('bigdatat3.py').getOrCreate()
 
 # Define la ruta del archivo .csv en HDFS
 file_path = 'hdfs://localhost:9000/Tarea3/dj7a-2nxi.csv'
@@ -62,3 +62,36 @@ df.filter(col("sexo") == "MASCULINO").show()
 
 # Consulta para mostrar solo los niños con tip_ss subsidiado
 df.filter(col("tip_ss") == "SUBSIDIADO").show()
+
+
+#///////////////////////////////////
+# ANÁLISIS DE RESULTADOS OBTENIDOS//
+#///////////////////////////////////
+
+# ANALISIS DE CANTIDADES
+# Número total de niños por nacionalidad
+df.groupBy("nombre_nacionalidad").count().show()
+
+# Número de casos por sexo
+df.groupBy("SEXO").count().show()
+
+# Número de casos por tipo de salud
+df.groupBy("TIP_SS").count().show()
+
+
+# ANALISIS DE PROMEDIOS
+# Edad promedio por nacionalidad
+from pyspark.sql.functions import avg
+df.groupBy("nombre_nacionalidad").agg(avg("EDAD")).show()
+
+# Edad promedio por sexo
+df.groupBy("SEXO").agg(avg("EDAD")).show()
+
+
+# ANALISIS DESVIACIONES ESTANDAR
+from pyspark.sql.functions import stddev
+# Desviación estándar de edad por nacionalidad
+df.groupBy("nombre_nacionalidad").agg(stddev("EDAD")).show()
+
+# Desviación estándar de edad por sexo
+df.groupBy("SEXO").agg(stddev("EDAD")).show()
